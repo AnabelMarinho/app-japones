@@ -17,6 +17,9 @@ public class UsuarioService {
     }
 
     public Usuario salvar(Usuario usuario) {
+        if (repository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email já cadastrado");
+        }
         return repository.save(usuario);
     }
 
@@ -27,4 +30,13 @@ public class UsuarioService {
     public Usuario buscarPorId(UUID id) {
         return repository.findById(id).orElse(null);
     }
+
+    public Usuario login(String email, String senha) {
+        return repository.findAll().stream()
+                .filter(u -> u.getEmail().equals(email) && u.getSenha().equals(senha))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Email ou senha inválidos"));
+    } // para testes, depois hashear senha *
+
+
 }
